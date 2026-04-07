@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Expedición Sierra Gorda</title>
+<title>Expedición Sierra Gorda | Decide la Aventura</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
+/* ════════════ VARIABLES & RESET ════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -25,960 +28,622 @@
   --white:    #FFFFFF;
   --ff-head:  'Fraunces', Georgia, serif;
   --ff-body:  'DM Sans', sans-serif;
-  --r:        18px;
-  --r-sm:     12px;
+  --r:        24px;
+  --r-sm:     14px;
+  --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
-  font-family: var(--ff-body);
-  background: var(--bg);
-  color: var(--ink);
-  font-size: 15px;
-  line-height: 1.65;
+  font-family: var(--ff-body); background: var(--bg);
+  color: var(--ink); font-size: 15px; line-height: 1.65;
   overflow-x: hidden;
 }
 
-/* ═══════════════════════════ HERO ═══════════════════════════ */
-.hero {
-  min-height: 100svh;
-  background: #1A1410;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 48px 24px 80px;
-  position: relative;
-  overflow: hidden;
+/* ════════════ NAVEGACIÓN FLOTANTE ════════════ */
+.nav-glass {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 10px 20px; border-radius: 100px; z-index: 1000;
+  display: flex; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  opacity: 0; animation: fadeInDown 1s 1.5s forwards;
 }
-.hero-orbs {
-  position: absolute; inset: 0; pointer-events: none;
+.nav-glass a {
+  text-decoration: none; color: var(--ink-2); font-size: 13px;
+  font-weight: 600; padding: 6px 12px; border-radius: 100px;
+  transition: var(--transition);
 }
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  animation: orbFloat 9s ease-in-out infinite alternate;
-}
-.orb-1 { width: 55vw; height: 55vw; background: rgba(200,145,59,0.20); top: -10%; left: -15%; animation-delay: 0s; }
-.orb-2 { width: 45vw; height: 45vw; background: rgba(78,159,179,0.16); bottom: 5%; right: -10%; animation-delay: -3s; }
-.orb-3 { width: 35vw; height: 35vw; background: rgba(194,103,68,0.14); top: 40%; left: 30%; animation-delay: -5s; }
-@keyframes orbFloat {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(4%, 3%) scale(1.06); }
-}
+.nav-glass a:hover { background: rgba(0,0,0,0.05); color: var(--ink); }
 
-.hero-noise {
-  position: absolute; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.035; background-size: 200px; pointer-events: none;
+/* ════════════ HERO PARALLAX ════════════ */
+.hero {
+  min-height: 100svh; background: #1A1410;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 48px 24px 80px;
+  position: relative; overflow: hidden;
 }
+.hero-content {
+  position: relative; z-index: 2; max-width: 600px;
+  background: rgba(26, 20, 16, 0.4);
+  padding: 40px; border-radius: var(--r);
+  backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05);
+}
+.hero-orbs { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.orb {
+  position: absolute; border-radius: 50%; filter: blur(80px);
+  transition: transform 0.1s ease-out; /* Para el efecto del mouse */
+}
+.orb-1 { width: 55vw; height: 55vw; background: rgba(200,145,59,0.25); top: -10%; left: -15%; animation: floatA 12s infinite alternate; }
+.orb-2 { width: 45vw; height: 45vw; background: rgba(78,159,179,0.20); bottom: 0%; right: -10%; animation: floatB 15s infinite alternate; }
+.orb-3 { width: 35vw; height: 35vw; background: rgba(194,103,68,0.18); top: 30%; left: 25%; animation: floatC 10s infinite alternate; }
+
+@keyframes floatA { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 30px); } }
+@keyframes floatB { 0% { transform: translate(0, 0); } 100% { transform: translate(-40px, -50px); } }
+@keyframes floatC { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, -20px) scale(1.1); } }
 
 .hero-eyebrow {
-  font-family: var(--ff-body);
-  font-size: 10.5px; font-weight: 600;
-  letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 22px;
-  position: relative;
-  opacity: 0; animation: fadeUp .7s .15s ease forwards;
-}
-.hero-eyebrow::before, .hero-eyebrow::after {
-  content: '—'; margin: 0 10px; opacity: 0.5;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+  opacity: 0; animation: fadeUp .7s .2s ease forwards;
 }
 .hero h1 {
-  font-family: var(--ff-head);
-  font-size: clamp(3.4rem, 13vw, 7rem);
-  font-weight: 300; line-height: .95;
-  color: #F5EDD8; position: relative;
-  opacity: 0; animation: fadeUp .8s .3s ease forwards;
+  font-family: var(--ff-head); font-size: clamp(3.5rem, 14vw, 7.5rem);
+  font-weight: 300; line-height: .9; color: #F5EDD8;
+  opacity: 0; animation: fadeUp .8s .4s ease forwards;
 }
-.hero h1 em { font-style: italic; color: #F0D99A; }
+.hero h1 em { font-style: italic; color: transparent; -webkit-text-stroke: 1px #F0D99A; }
 .hero-sub {
-  font-family: var(--ff-head);
-  font-size: clamp(1rem, 3.8vw, 1.4rem);
-  font-weight: 300; font-style: italic;
-  color: rgba(245,237,216,.45);
-  margin-top: 18px; margin-bottom: 36px;
-  position: relative;
-  opacity: 0; animation: fadeUp .8s .5s ease forwards;
+  font-family: var(--ff-head); font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-weight: 300; font-style: italic; color: rgba(245,237,216,.7);
+  margin: 24px 0 36px; opacity: 0; animation: fadeUp .8s .6s ease forwards;
 }
 .hero-chips {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  justify-content: center;
-  margin-bottom: 48px; position: relative;
-  opacity: 0; animation: fadeUp .8s .7s ease forwards;
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  opacity: 0; animation: fadeUp .8s .8s ease forwards;
 }
 .chip {
-  font-size: 11.5px; font-weight: 400;
-  letter-spacing: .04em;
-  padding: 5px 13px; border-radius: 100px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.13);
-  color: rgba(255,255,255,.65);
-  backdrop-filter: blur(6px);
+  font-size: 12px; font-weight: 500; letter-spacing: .05em;
+  padding: 6px 16px; border-radius: 100px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  color: #fff; display: flex; align-items: center; gap: 6px;
 }
-.hero-btns {
-  display: flex; gap: 10px; position: relative;
-  opacity: 0; animation: fadeUp .8s .9s ease forwards;
-}
-.plan-btn {
-  text-decoration: none;
-  padding: 12px 24px; border-radius: 100px;
-  font-size: 13px; font-weight: 600;
-  transition: transform .18s, box-shadow .18s;
-}
-.plan-btn:active { transform: scale(.96); }
-@media (hover:hover) { .plan-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.35); } }
-.btn-a { background: var(--gold); color: #1A1410; }
-.btn-b { background: var(--sky); color: #fff; }
-.btn-c { background: var(--terra); color: #fff; }
 
-.scroll-hint {
-  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 5px;
-  opacity: 0; animation: fadeIn 1s 1.4s forwards;
+/* ════════════ MARQUESINA (TICKER) ════════════ */
+.marquee-container {
+  background: var(--ink); color: var(--gold);
+  padding: 12px 0; overflow: hidden; white-space: nowrap;
+  border-bottom: 3px solid var(--gold); position: relative; z-index: 10;
 }
-.scroll-hint p { font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.25); }
-.scroll-bar {
-  width: 1px; height: 42px;
-  background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
-  animation: barPulse 2.2s ease-in-out infinite;
+.marquee {
+  display: inline-block; animation: marquee 30s linear infinite;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
 }
-@keyframes barPulse { 0%,100%{opacity:.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(.55)} }
+.marquee span { margin-right: 40px; }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* ═══════════════════════════ LAYOUT ═══════════════════════════ */
-.wrap { max-width: 580px; margin: 0 auto; padding: 0 18px; }
-.section { padding: 60px 0; }
+/* ════════════ LAYOUT & TIPOGRAFÍA ════════════ */
+.wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+.section { padding: 80px 0; }
 .sec-label {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: .28em; text-transform: uppercase;
-  color: var(--ink-3); margin-bottom: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+  text-align: center; display: block;
 }
 .sec-title {
-  font-family: var(--ff-head);
-  font-size: clamp(2rem, 7vw, 2.9rem);
-  font-weight: 300; line-height: 1.08;
-  color: var(--ink); margin-bottom: 36px;
+  font-family: var(--ff-head); font-size: clamp(2.2rem, 8vw, 3.2rem);
+  font-weight: 300; line-height: 1.1; color: var(--ink);
+  margin-bottom: 48px; text-align: center;
 }
-.sec-title em { font-style: italic; }
+.sec-title em { font-style: italic; color: var(--gold); }
 
-/* ═══════════════════════════ PLAN CARDS ═══════════════════════════ */
+/* ════════════ TARJETAS DE PLAN ════════════ */
 .plan-card {
-  background: var(--white);
-  border-radius: var(--r);
-  overflow: hidden;
-  box-shadow: 0 4px 28px rgba(30,24,18,.08);
-  margin-bottom: 26px;
-  opacity: 0; transform: translateY(28px);
-  transition: opacity .65s ease, transform .65s ease;
+  background: var(--white); border-radius: var(--r);
+  overflow: hidden; box-shadow: 0 10px 40px rgba(30,24,18,.06);
+  margin-bottom: 40px; position: relative;
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease, box-shadow var(--transition);
+  border: 1px solid var(--border);
 }
+.plan-card:hover { box-shadow: 0 15px 50px rgba(30,24,18,.12); transform: translateY(-5px); }
 .plan-card.in { opacity: 1; transform: translateY(0); }
 
-/* Card header */
-.card-head {
-  padding: 28px 22px 22px;
-  position: relative;
-}
-.card-head-a { background: linear-gradient(135deg, #FBF0D8 0%, #FDF7EE 100%); }
-.card-head-b { background: linear-gradient(135deg, #DDF0F5 0%, #EEF8FA 100%); }
-.card-head-c { background: linear-gradient(135deg, #FAE3D8 0%, #FDF2EC 100%); }
+.card-head { padding: 36px 30px 24px; position: relative; }
+.card-head-a { background: linear-gradient(145deg, #FDF7EE 0%, #FFFFFF 100%); }
+.card-head-b { background: linear-gradient(145deg, #EEF8FA 0%, #FFFFFF 100%); }
+.card-head-c { background: linear-gradient(145deg, #FDF2EC 0%, #FFFFFF 100%); }
 
 .plan-tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 10.5px; font-weight: 700;
-  letter-spacing: .14em; text-transform: uppercase;
-  padding: 4px 12px; border-radius: 100px;
-  margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 800; letter-spacing: .15em;
+  text-transform: uppercase; padding: 6px 16px; border-radius: 100px;
+  margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
-.tag-a { background: var(--gold); color: #1A1410; }
+.tag-a { background: var(--gold); color: #fff; }
 .tag-b { background: var(--sky); color: #fff; }
 .tag-c { background: var(--terra); color: #fff; }
 
 .card-name {
-  font-family: var(--ff-head);
-  font-size: clamp(1.5rem, 5.5vw, 2rem);
-  font-weight: 400; line-height: 1.12;
-  color: var(--ink); margin-bottom: 9px;
+  font-family: var(--ff-head); font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 400; line-height: 1.1; color: var(--ink); margin-bottom: 12px;
 }
 .card-name em { font-style: italic; }
-.card-desc {
-  font-size: 13.5px; font-weight: 300;
-  color: var(--ink-2); line-height: 1.55;
-}
-.meta-row {
-  display: flex; flex-wrap: wrap; gap: 7px;
-  margin-top: 16px;
-}
+.card-desc { font-size: 14.5px; font-weight: 400; color: var(--ink-2); line-height: 1.6; }
+
+.meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .meta-tag {
-  display: flex; align-items: center; gap: 4px;
-  font-size: 11px; font-weight: 500;
-  padding: 4px 10px; border-radius: 8px;
-  background: rgba(255,255,255,.72);
-  border: 1px solid rgba(0,0,0,.06);
-  color: var(--ink-2);
+  display: flex; align-items: center; gap: 6px; font-size: 11.5px;
+  font-weight: 600; padding: 6px 12px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--ink-2);
 }
 
-/* Card body */
-.card-body { padding: 4px 22px 22px; }
-
+/* ════════════ ACORDEÓN SUAVE (ITINERARIO) ════════════ */
+.card-body { padding: 10px 30px 30px; }
 .day-item { border-bottom: 1px solid var(--border); }
 .day-item:last-of-type { border-bottom: none; }
 
 .day-btn {
   width: 100%; background: none; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 15px 0; gap: 10px; text-align: left;
+  padding: 20px 0; text-align: left; transition: var(--transition);
 }
-.day-left { display: flex; align-items: center; gap: 11px; }
+.day-btn:hover .day-name { color: var(--gold); }
+.day-left { display: flex; align-items: center; gap: 14px; }
 .day-pip {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.8);
 }
-.pip-a { background: var(--gold); }
-.pip-b { background: var(--sky); }
-.pip-c { background: var(--terra); }
-.day-name {
-  font-size: 12.5px; font-weight: 600;
-  letter-spacing: .04em; text-transform: uppercase;
-  color: var(--ink);
-}
-.day-sub { font-size: 11.5px; font-weight: 300; color: var(--ink-3); }
+.pip-a { background: var(--gold); } .pip-b { background: var(--sky); } .pip-c { background: var(--terra); }
+.day-name { font-size: 14px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink); transition: var(--transition); }
+.day-sub { font-size: 12.5px; font-weight: 400; color: var(--ink-3); margin-top: 2px; }
 .day-chevron {
-  font-size: 16px; color: var(--ink-3);
-  transition: transform .28s ease; flex-shrink: 0;
+  width: 24px; height: 24px; border-radius: 50%; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--ink-2); transition: var(--transition);
 }
-.day-item.open .day-chevron { transform: rotate(180deg); }
+.day-item.open .day-chevron { transform: rotate(180deg); background: var(--ink); color: #fff; }
 
-.day-content { display: none; padding-bottom: 14px; }
-.day-item.open .day-content { display: block; }
-
-/* Activity row */
-.act {
-  display: flex; gap: 12px;
-  margin-bottom: 13px; align-items: flex-start;
+/* La magia del acordeón animado */
+.day-content-wrapper {
+  display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.day-item.open .day-content-wrapper { grid-template-rows: 1fr; }
+.day-content { overflow: hidden; }
+.day-content-inner { padding-bottom: 24px; }
+
+/* Actividades */
+.act { display: flex; gap: 16px; margin-bottom: 18px; align-items: flex-start; }
 .act:last-child { margin-bottom: 0; }
 .act-time {
-  font-size: 10.5px; font-weight: 600;
-  color: var(--ink-3); min-width: 50px;
-  padding-top: 3px; letter-spacing: .03em;
-  white-space: nowrap;
+  font-size: 11px; font-weight: 700; color: var(--ink-3);
+  min-width: 65px; padding-top: 4px; background: var(--bg);
+  padding: 4px 8px; border-radius: 6px; text-align: center;
 }
 .act-info { flex: 1; }
-.act-title {
-  font-size: 13.5px; font-weight: 500;
-  color: var(--ink); margin-bottom: 2px; line-height: 1.35;
-}
-.act-desc {
-  font-size: 12px; font-weight: 300;
-  color: var(--ink-3); line-height: 1.5;
-}
-.map-link {
-  display: inline-flex; align-items: center; gap: 4px;
-  margin-top: 5px; font-size: 11px; font-weight: 600;
-  text-decoration: none; padding: 4px 10px;
-  border-radius: 7px; border: 1.5px solid;
-  letter-spacing: .03em;
-  transition: opacity .15s, transform .15s;
-}
-.map-link:active { transform: scale(.95); }
-@media(hover:hover){ .map-link:hover{ opacity:.72; } }
-.link-a { color: var(--gold); border-color: rgba(200,145,59,.28); background: rgba(200,145,59,.05); }
-.link-b { color: var(--sky);  border-color: rgba(78,159,179,.28); background: rgba(78,159,179,.05); }
-.link-c { color: var(--terra);border-color: rgba(194,103,68,.28); background: rgba(194,103,68,.05); }
+.act-title { font-size: 14.5px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.act-desc { font-size: 13px; font-weight: 400; color: var(--ink-2); line-height: 1.5; }
 
-/* Gear box */
+/* ════════════ COMPLEMENTOS DEL PLAN ════════════ */
 .gear {
-  margin-top: 18px; padding: 15px 16px;
-  background: var(--bg); border-radius: var(--r-sm);
+  margin-top: 24px; padding: 20px; background: var(--surface);
+  border-radius: var(--r-sm); border: 1px solid var(--border);
 }
-.gear-label {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .22em; text-transform: uppercase;
-  color: var(--ink-3); margin-bottom: 9px;
-}
-.gear ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
-.gear li {
-  font-size: 12.5px; font-weight: 300; color: var(--ink-2);
-  display: flex; align-items: flex-start; gap: 8px;
-}
-.gear li::before { content:'→'; font-size: 10px; margin-top: 4px; flex-shrink: 0; color: var(--ink-3); }
+.gear-label { font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; }
+.gear ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.gear li { font-size: 13.5px; font-weight: 400; color: var(--ink-2); display: flex; align-items: flex-start; gap: 10px; }
+.gear li::before { content:'✓'; font-weight: 700; color: var(--gold); }
 
-/* Budget row */
 .budget {
-  display: flex; align-items: center;
-  justify-content: space-between;
-  margin-top: 16px; padding: 13px 15px;
-  border-radius: var(--r-sm); border: 1.5px dashed;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px; padding: 18px 20px; border-radius: var(--r-sm); border: 2px dashed;
 }
-.budget-a { border-color: rgba(200,145,59,.3); background: rgba(200,145,59,.04); }
-.budget-b { border-color: rgba(78,159,179,.3); background: rgba(78,159,179,.04); }
-.budget-c { border-color: rgba(194,103,68,.3); background: rgba(194,103,68,.04); }
-.bud-lbl { font-size: 10.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-.bud-val {
-  font-family: var(--ff-head);
-  font-size: 1.45rem; font-weight: 400;
-}
-.bud-a { color: var(--gold); }
-.bud-b { color: var(--sky); }
-.bud-c { color: var(--terra); }
-.bud-val small { font-size: .58em; color: var(--ink-3); }
+.budget-a { border-color: rgba(200,145,59,.4); background: rgba(200,145,59,.03); }
+.budget-b { border-color: rgba(78,159,179,.4); background: rgba(78,159,179,.03); }
+.budget-c { border-color: rgba(194,103,68,.4); background: rgba(194,103,68,.03); }
+.bud-lbl { font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--ink-3); }
+.bud-val { font-family: var(--ff-head); font-size: 1.8rem; font-weight: 400; }
+.bud-a { color: var(--gold); } .bud-b { color: var(--sky); } .bud-c { color: var(--terra); }
+.bud-val small { font-size: 0.5em; font-family: var(--ff-body); color: var(--ink-3); vertical-align: middle; }
 
-/* ═══════════════════════════ COMPARE ═══════════════════════════ */
-.compare-section { background: #EFE9DC; }
-.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--r); box-shadow: 0 4px 20px rgba(30,24,18,.07); }
-table { width: 100%; border-collapse: collapse; background: var(--white); min-width: 420px; }
-th {
-  font-size: 10.5px; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase;
-  padding: 11px 14px; text-align: left;
-  background: #F9F5EE; color: var(--ink-3);
-  border-bottom: 1.5px solid var(--border);
+/* ════════════ BOTÓN DE VOTACIÓN ════════════ */
+.vote-container { margin-top: 24px; text-align: center; }
+.vote-btn {
+  width: 100%; padding: 16px; border: none; border-radius: var(--r-sm);
+  font-family: var(--ff-body); font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s ease;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
 }
-td {
-  padding: 12px 14px; font-size: 13px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle; color: var(--ink-2);
-}
-tr:last-child td { border-bottom: none; }
-tr:nth-child(even) td { background: #FDFAF5; }
-td:first-child { font-weight: 500; font-size: 12px; color: var(--ink); }
-.ca { color: var(--gold); font-weight: 700; }
-.cb { color: var(--sky);  font-weight: 700; }
-.cc { color: var(--terra);font-weight: 700; }
-.dots { display: flex; gap: 4px; align-items: center; }
-.d { width: 8px; height: 8px; border-radius: 50%; }
-.da { background: var(--gold); }
-.db { background: var(--sky); }
-.dc { background: var(--terra); }
-.doff { background: transparent; border: 1.5px solid var(--border); }
+.vote-btn:active { transform: scale(0.97); }
+.vote-btn-a { background: var(--gold); color: #fff; box-shadow: 0 8px 20px rgba(200,145,59,0.3); }
+.vote-btn-b { background: var(--sky); color: #fff; box-shadow: 0 8px 20px rgba(78,159,179,0.3); }
+.vote-btn-c { background: var(--terra); color: #fff; box-shadow: 0 8px 20px rgba(194,103,68,0.3); }
+.vote-btn:hover { filter: brightness(1.1); transform: translateY(-3px); }
 
-/* ═══════════════════════════ CHECKLIST ═══════════════════════════ */
-.check-grid { display: flex; flex-direction: column; gap: 12px; }
+/* ════════════ COMPARATIVA ════════════ */
+.compare-section { background: var(--ink); color: #fff; border-radius: 40px 40px 0 0; padding-bottom: 100px; }
+.compare-section .sec-title, .compare-section .sec-label { color: #fff; }
+.tbl-wrap {
+  overflow-x: auto; border-radius: var(--r);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3); background: var(--surface); padding: 10px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 500px; }
+th { font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; padding: 16px; text-align: left; background: #fff; color: var(--ink-3); border-bottom: 2px solid var(--border); }
+td { padding: 16px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink-2); transition: background 0.2s; }
+tr:hover td { background: rgba(200,145,59,0.05); }
+td:first-child { font-weight: 600; color: var(--ink); }
+.ca { color: var(--gold); font-weight: 700; } .cb { color: var(--sky); font-weight: 700; } .cc { color: var(--terra); font-weight: 700; }
+
+/* ════════════ CHECKLIST & FOOTER ════════════ */
+.check-grid { display: grid; gap: 16px; }
 .check-card {
-  display: flex; gap: 14px; align-items: flex-start;
-  padding: 15px 16px; background: var(--white);
-  border-radius: var(--r-sm);
-  box-shadow: 0 2px 14px rgba(30,24,18,.06);
-  opacity: 0; transform: translateX(-18px);
-  transition: opacity .55s ease, transform .55s ease;
+  display: flex; gap: 18px; align-items: flex-start; padding: 20px;
+  background: var(--white); border-radius: var(--r-sm);
+  box-shadow: 0 4px 20px rgba(30,24,18,.04); border: 1px solid var(--border);
+  opacity: 0; transform: translateX(-20px); transition: var(--transition);
 }
+.check-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(30,24,18,.08); border-color: var(--gold); }
 .check-card.in { opacity: 1; transform: translateX(0); }
-.check-ico {
-  width: 38px; height: 38px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
-}
-.ico-g { background: rgba(200,145,59,.12); }
-.ico-b { background: rgba(78,159,179,.12); }
-.ico-t { background: rgba(194,103,68,.12); }
-.ico-s { background: rgba(100,130,90,.12); }
-.check-txt strong { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 2px; color: var(--ink); }
-.check-txt p { font-size: 12px; font-weight: 300; color: var(--ink-3); line-height: 1.5; }
+.check-ico { font-size: 24px; flex-shrink: 0; }
+.check-txt strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+.check-txt p { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
 
-/* ═══════════════════════════ FOOTER ═══════════════════════════ */
-footer {
-  background: #1A1410;
-  padding: 52px 24px 44px;
-  text-align: center;
-}
-.foot-logo {
-  font-family: var(--ff-head);
-  font-size: 2rem; font-weight: 300; font-style: italic;
-  color: #F0D99A; margin-bottom: 10px;
-}
-footer p { font-size: 12px; color: rgba(255,255,255,.28); line-height: 1.8; }
-.foot-divider {
-  width: 40px; height: 1px;
-  background: rgba(200,145,59,.4);
-  margin: 16px auto;
-}
+footer { background: #0A0806; padding: 60px 24px; text-align: center; }
+.foot-logo { font-family: var(--ff-head); font-size: 2.2rem; font-weight: 300; font-style: italic; color: #F0D99A; }
+footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margin-top: 15px; }
 
-/* ═══════════════════════════ ANIMATIONS ═══════════════════════════ */
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(18px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity:0; } to { opacity:1; }
-}
+/* Animaciones Base */
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeInDown { from { opacity:0; transform:translate(-50%, -20px); } to { opacity:1; transform:translate(-50%, 0); } }
 </style>
 </head>
 <body>
 
-<!-- ═════════════════════════ HERO ═════════════════════════ -->
-<section class="hero">
+<nav class="nav-glass">
+  <a href="#plan-a">A Clásico</a>
+  <a href="#plan-b">B Agua</a>
+  <a href="#plan-c">C Aventura</a>
+  <a href="#comparativa">Comparativa</a>
+</nav>
+
+<section class="hero" id="home">
   <div class="hero-orbs">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
   </div>
-  <div class="hero-noise"></div>
-
-  <p class="hero-eyebrow">Sábado — Lunes · Tres Propuestas</p>
-
-  <h1>Sierra<br><em>Gorda</em></h1>
-
-  <p class="hero-sub">Elige tu aventura antes de que alguien más lo haga</p>
-
-  <div class="hero-chips">
-    <span class="chip">📍 Base: Cabañas Cruz Verde</span>
-    <span class="chip">🏔 Pinal de Amoles, Qro.</span>
-    <span class="chip">3 días · 2 noches</span>
-  </div>
-
-  <div class="hero-btns">
-    <a href="#plan-a" class="plan-btn btn-a">Plan A</a>
-    <a href="#plan-b" class="plan-btn btn-b">Plan B</a>
-    <a href="#plan-c" class="plan-btn btn-c">Plan C</a>
-  </div>
-
-  <div class="scroll-hint">
-    <p>Explorar</p>
-    <div class="scroll-bar"></div>
+  
+  <div class="hero-content">
+    <p class="hero-eyebrow">Sábado — Lunes · Tres Propuestas</p>
+    <h1>Sierra<br><em>Gorda</em></h1>
+    <p class="hero-sub">Voten por su aventura antes de que alguien más reserve</p>
+    <div class="hero-chips">
+      <span class="chip">⛺ Cabañas Cruz Verde</span>
+      <span class="chip">🌲 Pinal de Amoles, Qro.</span>
+      <span class="chip">🗓️ 3 Días / 2 Noches</span>
+    </div>
   </div>
 </section>
 
-<!-- ═════════════════════════ PLANS ═════════════════════════ -->
+<div class="marquee-container">
+  <div class="marquee">
+    <span>⚠️ LLEVEN EFECTIVO: Cero cajeros en ruta</span>
+    <span>⛽ TANQUE LLENO: Cargar en Cadereyta o Vizarrón</span>
+    <span>📵 SIN SEÑAL CELULAR: Descarguen los mapas offline</span>
+    <span>🌿 SUSTENTABLE: Bloqueador biodegradable obligatorio</span>
+    <span>⚠️ LLEVEN EFECTIVO: Cero cajeros en ruta</span>
+    <span>⛽ TANQUE LLENO: Cargar en Cadereyta o Vizarrón</span>
+    <span>📵 SIN SEÑAL CELULAR: Descarguen los mapas offline</span>
+    <span>🌿 SUSTENTABLE: Bloqueador biodegradable obligatorio</span>
+  </div>
+</div>
+
 <section class="section">
   <div class="wrap">
-    <p class="sec-label">Los planes</p>
-    <h2 class="sec-title">¿Qué tipo de<br><em>viajero eres?</em></h2>
+    <span class="sec-label">Los planes</span>
+    <h2 class="sec-title">¿Qué tipo de<br><em>viajeros son?</em></h2>
 
-    <!-- ──────────── PLAN A ──────────── -->
     <div class="plan-card" id="plan-a">
       <div class="card-head card-head-a">
         <div class="plan-tag tag-a">✦ Plan A · Clásico</div>
         <h3 class="card-name">"Cumbres y <em>Cascadas</em> Legendarias"</h3>
-        <p class="card-desc">Fotografía de paisaje, los puntos más icónicos de la alta montaña y el menor tiempo en carretera. Para quienes quieren lo mejor de la sierra sin sacrificar comodidad.</p>
+        <p class="card-desc">Fotografía de paisaje, los puntos icónicos y menos tiempo en coche. Para quienes quieren lo mejor de la sierra sin sacrificar comodidad.</p>
         <div class="meta-row">
-          <span class="meta-tag">🚗 Traslado bajo</span>
-          <span class="meta-tag">📸 Fotogénico</span>
-          <span class="meta-tag">💪 Moderado</span>
-          <span class="meta-tag">🥾 359 escalones</span>
+          <span class="meta-tag">🚗 Menos Manejo</span>
+          <span class="meta-tag">📸 Paisajes</span>
+          <span class="meta-tag">🥾 359 Escalones</span>
         </div>
       </div>
-
       <div class="card-body">
-
         <div class="day-item open">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-a"></div>
-              <div><div class="day-name">Sábado</div><div class="day-sub">El Gigante de Cristal</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-a"></div><div><div class="day-name">Sábado</div><div class="day-sub">El Gigante de Cristal</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">11:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Arribo a la Puerta del Cielo</div>
-                <div class="act-desc">Punto más alto de la carretera federal 120. Parada obligatoria para fotos espectaculares sobre las nubes.</div>
-                <a class="map-link link-a" href="https://maps.google.com/?q=Puerta+del+Cielo+carretera+120+Sierra+Gorda+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">12:30 PM</span>
-              <div class="act-info">
-                <div class="act-title">Cascada El Chuveje</div>
-                <div class="act-desc">Caminata de 2 km (30 min) por sendero plano entre álamos. Estancia de 2–3 horas para picnic junto al agua.</div>
-                <a class="map-link link-a" href="https://maps.google.com/?q=Cascada+El+Chuveje+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">04:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Check-in Cruz Verde + Mirador de Cristal</div>
-                <div class="act-desc">Ingreso a la cabaña y visita al mirador de cristal a pocos minutos del alojamiento.</div>
-                <a class="map-link link-a" href="https://maps.google.com/?q=Cabanas+Cruz+Verde+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">La Puerta del Cielo</div><div class="act-desc">Punto más alto de la carretera federal 120. Parada obligatoria para fotos sobre las nubes.</div></div></div>
+            <div class="act"><span class="act-time">12:30 PM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Caminata de 2 km (30 min) por sendero plano. 2-3 horas para picnic.</div></div></div>
+            <div class="act"><span class="act-time">04:00 PM</span><div class="act-info"><div class="act-title">Check-in y Mirador de Cristal</div><div class="act-desc">Ingreso a Cruz Verde y visita al mirador ubicado a pocos minutos.</div></div></div>
+          </div></div></div>
         </div>
-
         <div class="day-item">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-a"></div>
-              <div><div class="day-name">Domingo</div><div class="day-sub">El Amanecer y los 359 Escalones</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-a"></div><div><div class="day-name">Domingo</div><div class="day-sub">El Amanecer y el Desafío</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">05:30 AM</span>
-              <div class="act-info">
-                <div class="act-title">Mirador Cuatro Palos 🌅</div>
-                <div class="act-desc">Amanecer sobre el "mar de nubes". Guía obligatorio en el sitio. Llevar abrigo muy pesado.</div>
-                <a class="map-link link-a" href="https://maps.google.com/?q=Mirador+Cuatro+Palos+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">11:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Cascada El Salto – San Pedro Escanela</div>
-                <div class="act-desc">Descenso de 359 escalones hasta una caída de agua prístina. La suela antiderrapante es vital.</div>
-                <a class="map-link link-a" href="https://maps.google.com/?q=Cascada+El+Salto+San+Pedro+Escanela+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">05:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Tarde en Pinal de Amoles</div>
-                <div class="act-desc">Recorrido por el pueblo mágico, cena de cecina y descanso nocturno en la cabaña.</div>
-                <a class="map-link link-a" href="https://maps.google.com/?q=Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">05:30 AM</span><div class="act-info"><div class="act-title">Mirador Cuatro Palos 🌅</div><div class="act-desc">Amanecer sobre el "mar de nubes". Guía obligatorio en el sitio. ¡Hace mucho frío!</div></div></div>
+            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">Cascada El Salto</div><div class="act-desc">Descenso de 359 escalones hacia una caída de agua prístina. (Alternativa a Puente de Dios).</div></div></div>
+            <div class="act"><span class="act-time">05:00 PM</span><div class="act-info"><div class="act-title">Tarde en Pinal de Amoles</div><div class="act-desc">Recorrido por el pueblo mágico y cena de cecina.</div></div></div>
+          </div></div></div>
         </div>
-
         <div class="day-item">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-a"></div>
-              <div><div class="day-name">Lunes</div><div class="day-sub">Desayuno de Altura y Retorno</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-a"></div><div><div class="day-name">Lunes</div><div class="day-sub">Desayuno y Retorno</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">09:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Mañana en la cabaña</div>
-                <div class="act-desc">Uso de asadores y áreas de senderismo privadas de Cruz Verde. Sin prisas.</div>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">12:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Check-out y regreso a Querétaro</div>
-                <div class="act-desc">Inicio del trayecto de vuelta con recuerdos y el estómago lleno.</div>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">09:00 AM</span><div class="act-info"><div class="act-title">Mañana de Cabaña</div><div class="act-desc">Uso de asadores y áreas de senderismo privadas.</div></div></div>
+            <div class="act"><span class="act-time">12:00 PM</span><div class="act-info"><div class="act-title">Check-out</div><div class="act-desc">Retorno a Querétaro capital.</div></div></div>
+          </div></div></div>
         </div>
 
         <div class="gear">
-          <div class="gear-label">Qué llevar</div>
+          <div class="gear-label">Requisitos Especiales</div>
           <ul>
-            <li>Botas de senderismo o tenis antiderrapantes (vital para El Salto)</li>
-            <li>Sistema de capas: abrigo pesado para Cuatro Palos + ropa ligera</li>
-            <li>Efectivo: $80 Chuveje + $130 Cuatro Palos + $80 El Salto/persona</li>
+            <li>Botas de senderismo o tenis antiderrapantes (Vital para los 359 escalones).</li>
+            <li>Sistema de capas: Abrigo MUY pesado para Cuatro Palos, ropa ligera para caminar.</li>
+            <li>Costos aprox: $80 Chuveje + $130 Cuatro Palos + $80 El Salto.</li>
           </ul>
         </div>
-        <div class="budget budget-a">
-          <span class="bud-lbl">Entradas estimadas</span>
-          <span class="bud-val bud-a">~$290 <small>MXN/persona</small></span>
-        </div>
-
+        <div class="budget budget-a"><span class="bud-lbl">Entradas / Pax</span><span class="bud-val bud-a">~$290 <small>MXN</small></span></div>
+        <div class="vote-container"><button class="vote-btn vote-btn-a" onclick="vote('Plan A: Cumbres y Cascadas')">¡Votar por el Plan A! 📸</button></div>
       </div>
     </div>
 
-    <!-- ──────────── PLAN B ──────────── -->
     <div class="plan-card" id="plan-b">
       <div class="card-head card-head-b">
         <div class="plan-tag tag-b">◈ Plan B · Agua</div>
         <h3 class="card-name">"El <em>Oasis</em> Turquesa"</h3>
-        <p class="card-desc">Nada en aguas templadas y disfruta el contraste térmico entre el bosque de niebla y los ríos cálidos de Ayutla. El plan más refrescante y único.</p>
+        <p class="card-desc">Nada en aguas templadas y disfruta el contraste térmico entre el bosque de niebla y los ríos cálidos de Ayutla.</p>
         <div class="meta-row">
-          <span class="meta-tag">🚗 Traslado alto</span>
-          <span class="meta-tag">🏊 Nado</span>
-          <span class="meta-tag">💪 Moderado</span>
+          <span class="meta-tag">🚗 Viaje a Ayutla</span>
+          <span class="meta-tag">🏊 Pozas 4m prof.</span>
           <span class="meta-tag">🌡 Contraste térmico</span>
         </div>
       </div>
-
       <div class="card-body">
-
         <div class="day-item open">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-b"></div>
-              <div><div class="day-name">Sábado</div><div class="day-sub">Inmersión en el Bosque de Niebla</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-b"></div><div><div class="day-name">Sábado</div><div class="day-sub">Inmersión en el Bosque</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">12:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Cascada El Chuveje — Pozas bajas</div>
-                <div class="act-desc">Exploración de pozas para nadar un poco. Advertencia: el agua es gélida, prepara el cuerpo.</div>
-                <a class="map-link link-b" href="https://maps.google.com/?q=Cascada+El+Chuveje+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">03:30 PM</span>
-              <div class="act-info">
-                <div class="act-title">Check-in Cruz Verde</div>
-                <div class="act-desc">Instalación en la cabaña y preparación de alimentos para disfrutar la tarde.</div>
-                <a class="map-link link-b" href="https://maps.google.com/?q=Cabanas+Cruz+Verde+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">12:00 PM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Exploración de pozas bajas para nadar. Advertencia: ¡Agua gélida!</div></div></div>
+            <div class="act"><span class="act-time">03:30 PM</span><div class="act-info"><div class="act-title">Check-in Cruz Verde</div><div class="act-desc">Instalación y preparación de alimentos.</div></div></div>
+          </div></div></div>
         </div>
-
         <div class="day-item">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-b"></div>
-              <div><div class="day-name">Domingo</div><div class="day-sub">Expedición a Los Arquitos (Ayutla)</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-b"></div><div><div class="day-name">Domingo</div><div class="day-sub">Expedición a Los Arquitos</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">08:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Salida hacia Arroyo Seco</div>
-                <div class="act-desc">Trayecto de 1.5–2 horas descendiendo a la zona cálida. Gasolina llena desde Vizarrón.</div>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">10:30 AM</span>
-              <div class="act-info">
-                <div class="act-title">Los Arquitos — Río Ayutla</div>
-                <div class="act-desc">Caminata guiada de 40 min por la ribera hasta arcos naturales y pozas de hasta 4 m de profundidad.</div>
-                <a class="map-link link-b" href="https://maps.google.com/?q=Los+Arquitos+Arroyo+Seco+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">02:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Las Adjuntas</div>
-                <div class="act-desc">Confluencia de los ríos Ayutla y Santa María: colores distintos y temperaturas opuestas en un mismo punto.</div>
-                <a class="map-link link-b" href="https://maps.google.com/?q=Las+Adjuntas+Arroyo+Seco+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">05:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Regreso a la montaña</div>
-                <div class="act-desc">Ascenso de vuelta a Pinal de Amoles con las mejores fotos del viaje.</div>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">08:00 AM</span><div class="act-info"><div class="act-title">Descenso a Arroyo Seco</div><div class="act-desc">Trayecto de 1.5 a 2 hrs hacia la zona cálida.</div></div></div>
+            <div class="act"><span class="act-time">10:30 AM</span><div class="act-info"><div class="act-title">Los Arquitos (Ayutla)</div><div class="act-desc">Caminata de 40 min por la ribera hasta pozas de 4m de profundidad.</div></div></div>
+            <div class="act"><span class="act-time">02:00 PM</span><div class="act-info"><div class="act-title">Las Adjuntas</div><div class="act-desc">Unión de los ríos Ayutla y Santa María (separación de colores y temperaturas).</div></div></div>
+            <div class="act"><span class="act-time">05:00 PM</span><div class="act-info"><div class="act-title">Ascenso</div><div class="act-desc">Regreso a las cabañas en Pinal.</div></div></div>
+          </div></div></div>
         </div>
-
         <div class="day-item">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-b"></div>
-              <div><div class="day-name">Lunes</div><div class="day-sub">El Mirador de la Media Luna</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-b"></div><div><div class="day-name">Lunes</div><div class="day-sub">Media Luna y Gorditas</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">06:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Mirador Cuatro Palos — Express</div>
-                <div class="act-desc">Visita rápida al amanecer antes del cierre del viaje. El mar de nubes no decepciona.</div>
-                <a class="map-link link-b" href="https://maps.google.com/?q=Mirador+Cuatro+Palos+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">11:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Almuerzo regional + Check-out</div>
-                <div class="act-desc">Gorditas y café en las fondas de la carretera. Regreso a Querétaro con el tanque lleno y el alma llena también.</div>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">06:00 AM</span><div class="act-info"><div class="act-title">Mirador Cuatro Palos</div><div class="act-desc">Amanecer rápido antes del cierre del viaje.</div></div></div>
+            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">Almuerzo y Check-out</div><div class="act-desc">Parada en fondas de la carretera para gorditas y café.</div></div></div>
+          </div></div></div>
         </div>
 
         <div class="gear">
-          <div class="gear-label">Qué llevar</div>
+          <div class="gear-label">Requisitos Especiales</div>
           <ul>
-            <li>Traje de baño, toalla de secado rápido y water shoes para el río</li>
-            <li>Bloqueador solar y repelente biodegradables (obligatorio para no dañar el río)</li>
-            <li>Gasolina llena desde Vizarrón — el trayecto a Ayutla es largo</li>
+            <li>Traje de baño, toalla rápida y water shoes para las piedras del río.</li>
+            <li>Tanque lleno de gasolina desde Vizarrón (Ayutla consume más por las curvas).</li>
+            <li>Bloqueador y repelente 100% biodegradables.</li>
           </ul>
         </div>
-        <div class="budget budget-b">
-          <span class="bud-lbl">Entradas estimadas</span>
-          <span class="bud-val bud-b">~$260 <small>MXN/persona</small></span>
-        </div>
-
+        <div class="budget budget-b"><span class="bud-lbl">Entradas / Pax</span><span class="bud-val bud-b">~$260 <small>MXN</small></span></div>
+        <div class="vote-container"><button class="vote-btn vote-btn-b" onclick="vote('Plan B: El Oasis Turquesa')">¡Votar por el Plan B! 🏊</button></div>
       </div>
     </div>
 
-    <!-- ──────────── PLAN C ──────────── -->
     <div class="plan-card" id="plan-c">
       <div class="card-head card-head-c">
         <div class="plan-tag tag-c">▲ Plan C · Aventura</div>
         <h3 class="card-name">"Adrenalina y <em>Patrimonio</em>"</h3>
-        <p class="card-desc">Tirolesas sobre cañones + misiones de la UNESCO. El plan más intenso para quienes quieren descarga de adrenalina y cultura en una sola escapada.</p>
+        <p class="card-desc">Tirolesas sobre cañones y misiones UNESCO. El plan más intenso para quienes quieren descarga de adrenalina y cultura.</p>
         <div class="meta-row">
-          <span class="meta-tag">🚗 Traslado medio</span>
-          <span class="meta-tag">🪂 Tirolesas x8</span>
-          <span class="meta-tag">💪 Alta dificultad</span>
+          <span class="meta-tag">🪂 8 Tirolesas</span>
           <span class="meta-tag">🏛 UNESCO</span>
+          <span class="meta-tag">💪 Alta Intensidad</span>
         </div>
       </div>
-
       <div class="card-body">
-
         <div class="day-item open">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-c"></div>
-              <div><div class="day-name">Sábado</div><div class="day-sub">Cañones y Puentes Colgantes</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-c"></div><div><div class="day-name">Sábado</div><div class="day-sub">Cañones y Vuelo</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">12:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Bucareli Extremo 🪂</div>
-                <div class="act-desc">Circuito de 8 tirolesas y puentes colgantes sobre el río Extoraz. Peso máximo 90 kg. No apto para cardiacos.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Bucareli+Extremo+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">04:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Exconvento de Bucareli</div>
-                <div class="act-desc">Ruinas del convento inacabado en medio del cañón. Historia y arquitectura colonial en un entorno surreal.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Exconvento+Bucareli+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">06:00 PM</span>
-              <div class="act-info">
-                <div class="act-title">Check-in Cruz Verde</div>
-                <div class="act-desc">Pernocta en la cabaña. Descanso merecido después del circuito de tirolesas.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Cabanas+Cruz+Verde+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">12:00 PM</span><div class="act-info"><div class="act-title">Bucareli Extremo</div><div class="act-desc">Circuito de 8 tirolesas y puentes colgantes sobre el río Extoraz.</div></div></div>
+            <div class="act"><span class="act-time">04:00 PM</span><div class="act-info"><div class="act-title">Exconvento de Bucareli</div><div class="act-desc">Ruinas del convento inacabado en medio del cañón.</div></div></div>
+            <div class="act"><span class="act-time">06:00 PM</span><div class="act-info"><div class="act-title">Check-in Cruz Verde</div><div class="act-desc">Descanso merecido en la cabaña.</div></div></div>
+          </div></div></div>
         </div>
-
         <div class="day-item">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-c"></div>
-              <div><div class="day-name">Domingo</div><div class="day-sub">Corazón de la Sierra Gorda</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-c"></div><div><div class="day-name">Domingo</div><div class="day-sub">Corazón de la Sierra</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">09:00 AM</span>
-              <div class="act-info">
-                <div class="act-title">Cascada El Chuveje — Mañana tranquila</div>
-                <div class="act-desc">Caminata matutina para evitar grupos grandes. La mejor hora del día para visitarla.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Cascada+El+Chuveje+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">12:30 PM</span>
-              <div class="act-info">
-                <div class="act-title">Jalpan de Serra — Misión de Santiago 🏛</div>
-                <div class="act-desc">Comida en el pueblo mágico y visita a la Misión de Santiago, Patrimonio de la Humanidad UNESCO.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Mision+de+Santiago+Jalpan+de+Serra+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">03:30 PM</span>
-              <div class="act-info">
-                <div class="act-title">Presa Jalpan — Kayak o Bici Acuática</div>
-                <div class="act-desc">Caminata por el malecón o renta de kayak/bici acuática. Tarde relajada sobre el embalse.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Presa+Jalpan+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">09:00 AM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Caminata matutina para evitar grupos grandes.</div></div></div>
+            <div class="act"><span class="act-time">12:30 PM</span><div class="act-info"><div class="act-title">Jalpan de Serra</div><div class="act-desc">Comida en pueblo mágico y visita a Misión de Santiago (UNESCO).</div></div></div>
+            <div class="act"><span class="act-time">03:30 PM</span><div class="act-info"><div class="act-title">Presa Jalpan</div><div class="act-desc">Caminata en malecón o renta de kayak/bici acuática.</div></div></div>
+          </div></div></div>
         </div>
-
         <div class="day-item">
           <button class="day-btn" onclick="toggle(this)">
-            <div class="day-left">
-              <div class="day-pip pip-c"></div>
-              <div><div class="day-name">Lunes</div><div class="day-sub">Cierre Panorámico</div></div>
-            </div>
-            <span class="day-chevron">▾</span>
+            <div class="day-left"><div class="day-pip pip-c"></div><div><div class="day-name">Lunes</div><div class="day-sub">Cierre Panorámico</div></div></div>
+            <div class="day-chevron">▾</div>
           </button>
-          <div class="day-content">
-            <div class="act">
-              <span class="act-time">05:30 AM</span>
-              <div class="act-info">
-                <div class="act-title">Mirador Cuatro Palos — Amanecer final</div>
-                <div class="act-desc">El broche de oro de la expedición. Mar de nubes para cerrar el viaje con todo.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Mirador+Cuatro+Palos+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-            <div class="act">
-              <span class="act-time">10:30 AM</span>
-              <div class="act-info">
-                <div class="act-title">Museo Comunitario de Pinal de Amoles</div>
-                <div class="act-desc">Visita rápida antes de partir. Cultura local como despedida perfecta.</div>
-                <a class="map-link link-c" href="https://maps.google.com/?q=Museo+Comunitario+Pinal+de+Amoles+Queretaro" target="_blank" rel="noopener">📍 Ver en Maps</a>
-              </div>
-            </div>
-          </div>
+          <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
+            <div class="act"><span class="act-time">05:30 AM</span><div class="act-info"><div class="act-title">Mirador Cuatro Palos</div><div class="act-desc">Despedida con el mar de nubes.</div></div></div>
+            <div class="act"><span class="act-time">10:30 AM</span><div class="act-info"><div class="act-title">Museo Comunitario</div><div class="act-desc">Visita rápida en Pinal de Amoles antes de partir.</div></div></div>
+          </div></div></div>
         </div>
 
         <div class="gear">
-          <div class="gear-label">Qué llevar</div>
+          <div class="gear-label">Requisitos Especiales</div>
           <ul>
-            <li>Ropa elástica y cómoda para el arnés — evitar faldas o vestidos</li>
-            <li>Peso máximo para tirolesas de Bucareli: 90 kg por persona</li>
-            <li>Presupuesto extra: circuitos entre $300 y $700 MXN/persona</li>
+            <li>Peso Máximo: 90 kg por persona para las tirolesas.</li>
+            <li>Ropa elástica y cómoda para usar con el arnés (evitar faldas).</li>
+            <li>Presupuesto extra: Circuitos de tirolesa entre $300 y $700 MXN extras.</li>
           </ul>
         </div>
-        <div class="budget budget-c">
-          <span class="bud-lbl">Entradas estimadas</span>
-          <span class="bud-val bud-c">~$800 <small>MXN/persona</small></span>
-        </div>
-
+        <div class="budget budget-c"><span class="bud-lbl">Entradas / Pax</span><span class="bud-val bud-c">~$800 <small>MXN</small></span></div>
+        <div class="vote-container"><button class="vote-btn vote-btn-c" onclick="vote('Plan C: Adrenalina')">¡Votar por el Plan C! 🪂</button></div>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- ═════════════════════════ COMPARATIVA ═════════════════════════ -->
-<section class="section compare-section">
+<section class="section compare-section" id="comparativa">
   <div class="wrap">
-    <p class="sec-label">Comparativa</p>
-    <h2 class="sec-title">Lado a <em>lado</em></h2>
+    <span class="sec-label">Resumen</span>
+    <h2 class="sec-title">Comparativa <em>Directa</em></h2>
     <div class="tbl-wrap">
       <table>
         <thead>
           <tr>
-            <th>Aspecto</th>
+            <th>Factor Clave</th>
             <th><span class="ca">Plan A</span></th>
             <th><span class="cb">Plan B</span></th>
             <th><span class="cc">Plan C</span></th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Costo entradas</td>
-            <td class="ca">~$290 MXN</td>
-            <td class="cb">~$260 MXN</td>
-            <td class="cc">~$800 MXN</td>
-          </tr>
-          <tr>
-            <td>Tiempo en coche</td>
-            <td>🟢 Bajo</td>
-            <td>🔴 Alto</td>
-            <td>🟡 Medio</td>
-          </tr>
-          <tr>
-            <td>Dificultad física</td>
-            <td><div class="dots"><div class="d da"></div><div class="d da"></div><div class="d doff"></div></div></td>
-            <td><div class="dots"><div class="d db"></div><div class="d db"></div><div class="d doff"></div></div></td>
-            <td><div class="dots"><div class="d dc"></div><div class="d dc"></div><div class="d dc"></div></div></td>
-          </tr>
-          <tr>
-            <td>¿Se puede nadar?</td>
-            <td>Parcialmente</td>
-            <td>✅ Sí</td>
-            <td>Parcialmente</td>
-          </tr>
-          <tr>
-            <td>Cultura / Historia</td>
-            <td>Pueblo Mágico</td>
-            <td>Pueblo Mágico</td>
-            <td>✅ UNESCO</td>
-          </tr>
-          <tr>
-            <td>Adrenalina</td>
-            <td>Escalones</td>
-            <td>Senderismo</td>
-            <td>✅ Tirolesas</td>
-          </tr>
-          <tr>
-            <td>Amanecer</td>
-            <td>✅ Dom. 5:30am</td>
-            <td>✅ Lun. 6:00am</td>
-            <td>✅ Lun. 5:30am</td>
-          </tr>
-          <tr>
-            <td>Hospedaje</td>
-            <td>Cruz Verde</td>
-            <td>Cruz Verde</td>
-            <td>Cruz Verde</td>
-          </tr>
+          <tr><td>Costo Entradas</td><td class="ca">~$290 MXN</td><td class="cb">~$260 MXN</td><td class="cc">~$800 MXN</td></tr>
+          <tr><td>Tiempo en Coche</td><td>Radio 30km (Bajo)</td><td>Viaje a Ayutla (Alto)</td><td>Jalpan/Bucareli (Medio)</td></tr>
+          <tr><td>Esfuerzo Físico</td><td>Moderado (Escaleras)</td><td>Moderado (Senderos)</td><td>Alto (Adrenalina)</td></tr>
+          <tr><td>Actividad Top</td><td>Fotos & Cascadas</td><td>Nadar en Pozas</td><td>Tirolesas & UNESCO</td></tr>
+          <tr><td>Hospedaje</td><td>Cruz Verde</td><td>Cruz Verde</td><td>Cruz Verde</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- ═════════════════════════ CHECKLIST ═════════════════════════ -->
 <section class="section">
   <div class="wrap">
-    <p class="sec-label">Para todos los planes</p>
-    <h2 class="sec-title">Checklist<br><em>general</em></h2>
+    <span class="sec-label">Reglas del Viaje</span>
+    <h2 class="sec-title">Checklist <em>Obligatorio</em></h2>
     <div class="check-grid">
       <div class="check-card">
-        <div class="check-ico ico-g">💵</div>
-        <div class="check-txt">
-          <strong>Efectivo — indispensable</strong>
-          <p>No hay cajeros confiables en los parajes. Los guías y entradas solo aceptan efectivo. Carga suficiente desde la ciudad.</p>
-        </div>
+        <div class="check-ico">💵</div>
+        <div class="check-txt"><strong>Efectivo en mano</strong><p>Los parajes, guías y tienditas de la sierra no tienen terminales. No confíen en encontrar un cajero allá arriba.</p></div>
       </div>
       <div class="check-card">
-        <div class="check-ico ico-t">⛽</div>
-        <div class="check-txt">
-          <strong>Tanque lleno antes de subir</strong>
-          <p>Carga en Cadereyta o Vizarrón. La sierra no tiene gasolineras confiables una vez que subes.</p>
-        </div>
+        <div class="check-ico">⛽</div>
+        <div class="check-txt"><strong>Tanque a full</strong><p>Carguen gasolina en Cadereyta o Vizarrón antes de empezar a subir las curvas de Pinal.</p></div>
       </div>
       <div class="check-card">
-        <div class="check-ico ico-b">📡</div>
-        <div class="check-txt">
-          <strong>Sin señal en ruta</strong>
-          <p>Las cabañas tienen Starlink, pero en carreteras y ríos la señal es nula. Descarga mapas offline antes de salir.</p>
-        </div>
+        <div class="check-ico">📡</div>
+        <div class="check-txt"><strong>Cero Internet</strong><p>Aunque la cabaña tiene Starlink, en ruta estaremos incomunicados. Descarguen sus playlists y Google Maps offline.</p></div>
       </div>
       <div class="check-card">
-        <div class="check-ico ico-s">🌿</div>
-        <div class="check-txt">
-          <strong>Turismo sustentable</strong>
-          <p>Drones prohibidos en áreas protegidas. Bloqueadores y repelentes biodegradables en los ríos. Deja solo huellas.</p>
-        </div>
+        <div class="check-ico">🌿</div>
+        <div class="check-txt"><strong>Sustentabilidad</strong><p>Prohibidos los drones en zonas protegidas. Todo químico (bloqueador, repelente) debe ser amigable con el agua.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═════════════════════════ FOOTER ═════════════════════════ -->
 <footer>
   <div class="foot-logo">Sierra Gorda</div>
-  <div class="foot-divider"></div>
-  <p>Base: Cabañas Cruz Verde · Pinal de Amoles, Querétaro<br>Sábado → Lunes · 3 días · 2 noches</p>
+  <p>Diseñado por Pedro para la expedición<br>Sábado → Lunes · 3 días · 2 noches</p>
 </footer>
 
 <script>
-  // Accordion toggle
+  // 1. Efecto Parallax en el Hero
+  document.addEventListener('mousemove', (e) => {
+    const orbs = document.querySelectorAll('.orb');
+    const x = e.clientX / window.innerWidth - 0.5;
+    const y = e.clientY / window.innerHeight - 0.5;
+    
+    orbs[0].style.transform = `translate(${x * 40}px, ${y * 40}px)`;
+    orbs[1].style.transform = `translate(${x * -60}px, ${y * -60}px)`;
+    orbs[2].style.transform = `translate(${x * 30}px, ${y * 30}px)`;
+  });
+
+  // 2. Acordeones Suaves
   function toggle(btn) {
-    btn.closest('.day-item').classList.toggle('open');
+    const currentItem = btn.closest('.day-item');
+    const allItems = btn.closest('.card-body').querySelectorAll('.day-item');
+    
+    // Si quieres que solo uno se abra a la vez, descomenta esto:
+    // allItems.forEach(item => {
+    //   if(item !== currentItem) item.classList.remove('open');
+    // });
+    
+    currentItem.classList.toggle('open');
   }
 
-  // Scroll-triggered reveal with IntersectionObserver
+  // 3. Revelado al hacer Scroll (Intersection Observer)
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
+    entries.forEach(e => {
       if (e.isIntersecting) {
-        const delay = +(e.target.dataset.d || 0);
-        setTimeout(() => e.target.classList.add('in'), delay);
+        e.target.classList.add('in');
         io.unobserve(e.target);
       }
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.plan-card').forEach((el, i) => {
-    el.dataset.d = i * 90;
-    io.observe(el);
-  });
-  document.querySelectorAll('.check-card').forEach((el, i) => {
-    el.dataset.d = i * 100;
-    io.observe(el);
-  });
+  document.querySelectorAll('.plan-card, .check-card').forEach(el => io.observe(el));
+
+  // 4. Sistema de Votación y Confeti
+  function vote(planName) {
+    // Disparar confeti
+    var duration = 3000;
+    var end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#C8913B', '#4E9FB3', '#C26744']
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#C8913B', '#4E9FB3', '#C26744']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      } else {
+        // Alerta nativa simpática para el usuario
+        alert("¡Excelente elección! Has votado por " + planName + ".\n\nToma captura de pantalla y mándala al grupo para que cuente tu voto.");
+      }
+    }());
+  }
 </script>
 </body>
 </html>
