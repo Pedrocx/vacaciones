@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Expedición Sierra Gorda | Decide la Aventura</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,18 +13,23 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:       #F8F3EA;
-  --surface:  #FDFAF5;
-  --border:   #EAE3D6;
-  --ink:      #1E1812;
-  --ink-2:    #4B4035;
-  --ink-3:    #9A8C7E;
-  --gold:     #C8913B;
-  --gold-bg:  #FBF0D8;
-  --sky:      #4E9FB3;
-  --sky-bg:   #DDF0F5;
-  --terra:    #C26744;
-  --terra-bg: #FAE3D8;
+  /* Paleta Verde Natural */
+  --bg:       #F3F6F4;
+  --surface:  #FFFFFF;
+  --border:   #E2E8E4;
+  --ink:      #1A2421;
+  --ink-2:    #3E504A;
+  --ink-3:    #7A8A84;
+  
+  --primary:  #4A7C59; /* Verde natural */
+  --primary-bg: #EAF0EC;
+  
+  --sky:      #3A7D8C; /* Azul río */
+  --sky-bg:   #E8F2F4;
+  
+  --terra:    #B36A4F; /* Tierra/Arcilla */
+  --terra-bg: #F5EAE6;
+  
   --white:    #FFFFFF;
   --ff-head:  'Fraunces', Georgia, serif;
   --ff-body:  'DM Sans', sans-serif;
@@ -37,47 +42,54 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--ff-body); background: var(--bg);
   color: var(--ink); font-size: 15px; line-height: 1.65;
-  overflow-x: hidden;
+  overflow-x: hidden; padding-bottom: 80px; /* Espacio para el menú móvil */
 }
 
-/* ════════════ NAVEGACIÓN FLOTANTE ════════════ */
+/* ════════════ NAVEGACIÓN FLOTANTE (ADAPTATIVA) ════════════ */
 .nav-glass {
   position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.5);
   padding: 10px 20px; border-radius: 100px; z-index: 1000;
-  display: flex; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  display: flex; gap: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.08);
   opacity: 0; animation: fadeInDown 1s 1.5s forwards;
 }
 .nav-glass a {
   text-decoration: none; color: var(--ink-2); font-size: 13px;
   font-weight: 600; padding: 6px 12px; border-radius: 100px;
-  transition: var(--transition);
+  transition: var(--transition); white-space: nowrap;
 }
-.nav-glass a:hover { background: rgba(0,0,0,0.05); color: var(--ink); }
+.nav-glass a:hover, .nav-glass a:active { background: var(--primary-bg); color: var(--primary); }
+
+/* Ajuste Móvil: El menú se va abajo para alcanzarlo con el pulgar */
+@media (max-width: 768px) {
+  .nav-glass {
+    top: auto; bottom: 20px; width: calc(100% - 30px);
+    justify-content: space-between; padding: 12px 15px;
+    animation: fadeInUp 1s 1.5s forwards;
+  }
+  .nav-glass a { font-size: 12px; padding: 8px 10px; }
+}
 
 /* ════════════ HERO PARALLAX ════════════ */
 .hero {
-  min-height: 100svh; background: #1A1410;
+  min-height: 100svh; background: #121A16; /* Tono bosque oscuro */
   display: flex; flex-direction: column; align-items: center;
-  justify-content: center; text-align: center; padding: 48px 24px 80px;
+  justify-content: center; text-align: center; padding: 48px 20px 80px;
   position: relative; overflow: hidden;
 }
 .hero-content {
   position: relative; z-index: 2; max-width: 600px;
-  background: rgba(26, 20, 16, 0.4);
-  padding: 40px; border-radius: var(--r);
-  backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(18, 26, 22, 0.45);
+  padding: 40px 20px; border-radius: var(--r);
+  backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08);
 }
 .hero-orbs { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-.orb {
-  position: absolute; border-radius: 50%; filter: blur(80px);
-  transition: transform 0.1s ease-out; /* Para el efecto del mouse */
-}
-.orb-1 { width: 55vw; height: 55vw; background: rgba(200,145,59,0.25); top: -10%; left: -15%; animation: floatA 12s infinite alternate; }
-.orb-2 { width: 45vw; height: 45vw; background: rgba(78,159,179,0.20); bottom: 0%; right: -10%; animation: floatB 15s infinite alternate; }
-.orb-3 { width: 35vw; height: 35vw; background: rgba(194,103,68,0.18); top: 30%; left: 25%; animation: floatC 10s infinite alternate; }
+.orb { position: absolute; border-radius: 50%; filter: blur(80px); transition: transform 0.1s ease-out; }
+.orb-1 { width: 60vw; height: 60vw; background: rgba(74,124,89,0.3); top: -10%; left: -15%; animation: floatA 12s infinite alternate; }
+.orb-2 { width: 50vw; height: 50vw; background: rgba(58,125,140,0.25); bottom: 0%; right: -10%; animation: floatB 15s infinite alternate; }
+.orb-3 { width: 40vw; height: 40vw; background: rgba(179,106,79,0.2); top: 30%; left: 25%; animation: floatC 10s infinite alternate; }
 
 @keyframes floatA { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 30px); } }
 @keyframes floatB { 0% { transform: translate(0, 0); } 100% { transform: translate(-40px, -50px); } }
@@ -85,36 +97,36 @@ body {
 
 .hero-eyebrow {
   font-size: 11px; font-weight: 700; letter-spacing: 0.3em;
-  text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+  text-transform: uppercase; color: #A3C9A8; margin-bottom: 20px;
   opacity: 0; animation: fadeUp .7s .2s ease forwards;
 }
 .hero h1 {
-  font-family: var(--ff-head); font-size: clamp(3.5rem, 14vw, 7.5rem);
-  font-weight: 300; line-height: .9; color: #F5EDD8;
+  font-family: var(--ff-head); font-size: clamp(3rem, 12vw, 7rem);
+  font-weight: 300; line-height: .9; color: #F0F4F1;
   opacity: 0; animation: fadeUp .8s .4s ease forwards;
 }
-.hero h1 em { font-style: italic; color: transparent; -webkit-text-stroke: 1px #F0D99A; }
+.hero h1 em { font-style: italic; color: transparent; -webkit-text-stroke: 1px #A3C9A8; }
 .hero-sub {
-  font-family: var(--ff-head); font-size: clamp(1.1rem, 4vw, 1.5rem);
-  font-weight: 300; font-style: italic; color: rgba(245,237,216,.7);
+  font-family: var(--ff-head); font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+  font-weight: 300; font-style: italic; color: rgba(240,244,241,.7);
   margin: 24px 0 36px; opacity: 0; animation: fadeUp .8s .6s ease forwards;
 }
 .hero-chips {
-  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
   opacity: 0; animation: fadeUp .8s .8s ease forwards;
 }
 .chip {
-  font-size: 12px; font-weight: 500; letter-spacing: .05em;
-  padding: 6px 16px; border-radius: 100px;
+  font-size: 11.5px; font-weight: 500; letter-spacing: .05em;
+  padding: 6px 14px; border-radius: 100px;
   background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
   color: #fff; display: flex; align-items: center; gap: 6px;
 }
 
 /* ════════════ MARQUESINA (TICKER) ════════════ */
 .marquee-container {
-  background: var(--ink); color: var(--gold);
+  background: var(--primary); color: #fff;
   padding: 12px 0; overflow: hidden; white-space: nowrap;
-  border-bottom: 3px solid var(--gold); position: relative; z-index: 10;
+  border-bottom: 3px solid #33593F; position: relative; z-index: 10;
 }
 .marquee {
   display: inline-block; animation: marquee 30s linear infinite;
@@ -125,48 +137,62 @@ body {
 
 /* ════════════ LAYOUT & TIPOGRAFÍA ════════════ */
 .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
-.section { padding: 80px 0; }
+.section { padding: 70px 0; }
 .sec-label {
   font-size: 11px; font-weight: 700; letter-spacing: .3em;
   text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
   text-align: center; display: block;
 }
 .sec-title {
-  font-family: var(--ff-head); font-size: clamp(2.2rem, 8vw, 3.2rem);
+  font-family: var(--ff-head); font-size: clamp(2rem, 8vw, 3.2rem);
   font-weight: 300; line-height: 1.1; color: var(--ink);
-  margin-bottom: 48px; text-align: center;
+  margin-bottom: 40px; text-align: center;
 }
-.sec-title em { font-style: italic; color: var(--gold); }
+.sec-title em { font-style: italic; color: var(--primary); }
+
+/* ════════════ VIDEOS RESPONSIVOS ════════════ */
+.video-grid {
+  display: grid; gap: 20px; grid-template-columns: 1fr;
+  margin-bottom: 20px;
+}
+@media (min-width: 600px) { .video-grid { grid-template-columns: 1fr 1fr; } }
+.yt-video {
+  width: 100%; aspect-ratio: 16 / 9;
+  border-radius: var(--r-sm);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: 1px solid var(--border);
+  background: var(--ink);
+}
 
 /* ════════════ TARJETAS DE PLAN ════════════ */
 .plan-card {
   background: var(--white); border-radius: var(--r);
-  overflow: hidden; box-shadow: 0 10px 40px rgba(30,24,18,.06);
+  overflow: hidden; box-shadow: 0 10px 40px rgba(26,36,33,.06);
   margin-bottom: 40px; position: relative;
   opacity: 0; transform: translateY(30px);
   transition: opacity 0.8s ease, transform 0.8s ease, box-shadow var(--transition);
   border: 1px solid var(--border);
 }
-.plan-card:hover { box-shadow: 0 15px 50px rgba(30,24,18,.12); transform: translateY(-5px); }
+.plan-card:hover { box-shadow: 0 15px 50px rgba(26,36,33,.12); transform: translateY(-3px); }
 .plan-card.in { opacity: 1; transform: translateY(0); }
 
-.card-head { padding: 36px 30px 24px; position: relative; }
-.card-head-a { background: linear-gradient(145deg, #FDF7EE 0%, #FFFFFF 100%); }
-.card-head-b { background: linear-gradient(145deg, #EEF8FA 0%, #FFFFFF 100%); }
-.card-head-c { background: linear-gradient(145deg, #FDF2EC 0%, #FFFFFF 100%); }
+.card-head { padding: 30px 24px 20px; position: relative; }
+.card-head-a { background: linear-gradient(145deg, #EAF0EC 0%, #FFFFFF 100%); }
+.card-head-b { background: linear-gradient(145deg, #E8F2F4 0%, #FFFFFF 100%); }
+.card-head-c { background: linear-gradient(145deg, #F5EAE6 0%, #FFFFFF 100%); }
 
 .plan-tag {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 11px; font-weight: 800; letter-spacing: .15em;
   text-transform: uppercase; padding: 6px 16px; border-radius: 100px;
-  margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
-.tag-a { background: var(--gold); color: #fff; }
+.tag-a { background: var(--primary); color: #fff; }
 .tag-b { background: var(--sky); color: #fff; }
 .tag-c { background: var(--terra); color: #fff; }
 
 .card-name {
-  font-family: var(--ff-head); font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-family: var(--ff-head); font-size: clamp(1.6rem, 7vw, 2.4rem);
   font-weight: 400; line-height: 1.1; color: var(--ink); margin-bottom: 12px;
 }
 .card-name em { font-style: italic; }
@@ -180,45 +206,42 @@ body {
 }
 
 /* ════════════ ACORDEÓN SUAVE (ITINERARIO) ════════════ */
-.card-body { padding: 10px 30px 30px; }
+.card-body { padding: 10px 24px 24px; }
 .day-item { border-bottom: 1px solid var(--border); }
 .day-item:last-of-type { border-bottom: none; }
 
 .day-btn {
   width: 100%; background: none; border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 0; text-align: left; transition: var(--transition);
+  padding: 18px 0; text-align: left; transition: var(--transition);
 }
-.day-btn:hover .day-name { color: var(--gold); }
+.day-btn:hover .day-name { color: var(--primary); }
 .day-left { display: flex; align-items: center; gap: 14px; }
 .day-pip {
   width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
   box-shadow: 0 0 0 3px rgba(255,255,255,0.8);
 }
-.pip-a { background: var(--gold); } .pip-b { background: var(--sky); } .pip-c { background: var(--terra); }
+.pip-a { background: var(--primary); } .pip-b { background: var(--sky); } .pip-c { background: var(--terra); }
 .day-name { font-size: 14px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink); transition: var(--transition); }
 .day-sub { font-size: 12.5px; font-weight: 400; color: var(--ink-3); margin-top: 2px; }
 .day-chevron {
-  width: 24px; height: 24px; border-radius: 50%; background: var(--bg);
+  width: 28px; height: 28px; border-radius: 50%; background: var(--bg);
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: var(--ink-2); transition: var(--transition);
+  font-size: 16px; color: var(--ink-2); transition: var(--transition);
 }
 .day-item.open .day-chevron { transform: rotate(180deg); background: var(--ink); color: #fff; }
 
-/* La magia del acordeón animado */
-.day-content-wrapper {
-  display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
+.day-content-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 .day-item.open .day-content-wrapper { grid-template-rows: 1fr; }
 .day-content { overflow: hidden; }
 .day-content-inner { padding-bottom: 24px; }
 
 /* Actividades */
-.act { display: flex; gap: 16px; margin-bottom: 18px; align-items: flex-start; }
+.act { display: flex; gap: 14px; margin-bottom: 18px; align-items: flex-start; }
 .act:last-child { margin-bottom: 0; }
 .act-time {
   font-size: 11px; font-weight: 700; color: var(--ink-3);
-  min-width: 65px; padding-top: 4px; background: var(--bg);
+  min-width: 65px; background: var(--bg);
   padding: 4px 8px; border-radius: 6px; text-align: center;
 }
 .act-info { flex: 1; }
@@ -227,24 +250,24 @@ body {
 
 /* ════════════ COMPLEMENTOS DEL PLAN ════════════ */
 .gear {
-  margin-top: 24px; padding: 20px; background: var(--surface);
+  margin-top: 24px; padding: 18px; background: var(--surface);
   border-radius: var(--r-sm); border: 1px solid var(--border);
 }
 .gear-label { font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px; }
 .gear ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .gear li { font-size: 13.5px; font-weight: 400; color: var(--ink-2); display: flex; align-items: flex-start; gap: 10px; }
-.gear li::before { content:'✓'; font-weight: 700; color: var(--gold); }
+.gear li::before { content:'✓'; font-weight: 700; color: var(--primary); }
 
 .budget {
   display: flex; align-items: center; justify-content: space-between;
-  margin-top: 16px; padding: 18px 20px; border-radius: var(--r-sm); border: 2px dashed;
+  margin-top: 16px; padding: 16px 18px; border-radius: var(--r-sm); border: 2px dashed;
 }
-.budget-a { border-color: rgba(200,145,59,.4); background: rgba(200,145,59,.03); }
-.budget-b { border-color: rgba(78,159,179,.4); background: rgba(78,159,179,.03); }
-.budget-c { border-color: rgba(194,103,68,.4); background: rgba(194,103,68,.03); }
+.budget-a { border-color: rgba(74,124,89,.4); background: rgba(74,124,89,.04); }
+.budget-b { border-color: rgba(58,125,140,.4); background: rgba(58,125,140,.04); }
+.budget-c { border-color: rgba(179,106,79,.4); background: rgba(179,106,79,.04); }
 .bud-lbl { font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--ink-3); }
-.bud-val { font-family: var(--ff-head); font-size: 1.8rem; font-weight: 400; }
-.bud-a { color: var(--gold); } .bud-b { color: var(--sky); } .bud-c { color: var(--terra); }
+.bud-val { font-family: var(--ff-head); font-size: 1.6rem; font-weight: 400; }
+.bud-a { color: var(--primary); } .bud-b { color: var(--sky); } .bud-c { color: var(--terra); }
 .bud-val small { font-size: 0.5em; font-family: var(--ff-body); color: var(--ink-3); vertical-align: middle; }
 
 /* ════════════ BOTÓN DE VOTACIÓN ════════════ */
@@ -256,46 +279,47 @@ body {
   display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 .vote-btn:active { transform: scale(0.97); }
-.vote-btn-a { background: var(--gold); color: #fff; box-shadow: 0 8px 20px rgba(200,145,59,0.3); }
-.vote-btn-b { background: var(--sky); color: #fff; box-shadow: 0 8px 20px rgba(78,159,179,0.3); }
-.vote-btn-c { background: var(--terra); color: #fff; box-shadow: 0 8px 20px rgba(194,103,68,0.3); }
+.vote-btn-a { background: var(--primary); color: #fff; box-shadow: 0 8px 20px rgba(74,124,89,0.3); }
+.vote-btn-b { background: var(--sky); color: #fff; box-shadow: 0 8px 20px rgba(58,125,140,0.3); }
+.vote-btn-c { background: var(--terra); color: #fff; box-shadow: 0 8px 20px rgba(179,106,79,0.3); }
 .vote-btn:hover { filter: brightness(1.1); transform: translateY(-3px); }
 
 /* ════════════ COMPARATIVA ════════════ */
-.compare-section { background: var(--ink); color: #fff; border-radius: 40px 40px 0 0; padding-bottom: 100px; }
+.compare-section { background: var(--ink); color: #fff; border-radius: 30px 30px 0 0; padding-bottom: 60px; }
 .compare-section .sec-title, .compare-section .sec-label { color: #fff; }
 .tbl-wrap {
   overflow-x: auto; border-radius: var(--r);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3); background: var(--surface); padding: 10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3); background: var(--surface); padding: 5px;
 }
 table { width: 100%; border-collapse: collapse; min-width: 500px; }
-th { font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; padding: 16px; text-align: left; background: #fff; color: var(--ink-3); border-bottom: 2px solid var(--border); }
-td { padding: 16px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink-2); transition: background 0.2s; }
-tr:hover td { background: rgba(200,145,59,0.05); }
+th { font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; padding: 14px; text-align: left; background: #fff; color: var(--ink-3); border-bottom: 2px solid var(--border); }
+td { padding: 14px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--ink-2); transition: background 0.2s; }
+tr:hover td { background: var(--primary-bg); }
 td:first-child { font-weight: 600; color: var(--ink); }
-.ca { color: var(--gold); font-weight: 700; } .cb { color: var(--sky); font-weight: 700; } .cc { color: var(--terra); font-weight: 700; }
+.ca { color: var(--primary); font-weight: 700; } .cb { color: var(--sky); font-weight: 700; } .cc { color: var(--terra); font-weight: 700; }
 
 /* ════════════ CHECKLIST & FOOTER ════════════ */
 .check-grid { display: grid; gap: 16px; }
 .check-card {
-  display: flex; gap: 18px; align-items: flex-start; padding: 20px;
+  display: flex; gap: 16px; align-items: flex-start; padding: 18px;
   background: var(--white); border-radius: var(--r-sm);
-  box-shadow: 0 4px 20px rgba(30,24,18,.04); border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(26,36,33,.04); border: 1px solid var(--border);
   opacity: 0; transform: translateX(-20px); transition: var(--transition);
 }
-.check-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(30,24,18,.08); border-color: var(--gold); }
+.check-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(26,36,33,.08); border-color: var(--primary); }
 .check-card.in { opacity: 1; transform: translateX(0); }
 .check-ico { font-size: 24px; flex-shrink: 0; }
-.check-txt strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+.check-txt strong { display: block; font-size: 14.5px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
 .check-txt p { font-size: 13px; color: var(--ink-2); line-height: 1.6; }
 
-footer { background: #0A0806; padding: 60px 24px; text-align: center; }
-.foot-logo { font-family: var(--ff-head); font-size: 2.2rem; font-weight: 300; font-style: italic; color: #F0D99A; }
-footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margin-top: 15px; }
+footer { background: #0F1412; padding: 50px 24px; text-align: center; }
+.foot-logo { font-family: var(--ff-head); font-size: 2.2rem; font-weight: 300; font-style: italic; color: #A3C9A8; }
+footer p { font-size: 12.5px; color: rgba(255,255,255,.4); line-height: 1.8; margin-top: 15px; }
 
 /* Animaciones Base */
 @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 @keyframes fadeInDown { from { opacity:0; transform:translate(-50%, -20px); } to { opacity:1; transform:translate(-50%, 0); } }
+@keyframes fadeInUp { from { opacity:0; transform:translate(0, 20px); } to { opacity:1; transform:translate(0, 0); } }
 </style>
 </head>
 <body>
@@ -330,14 +354,27 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
   <div class="marquee">
     <span>⚠️ LLEVEN EFECTIVO: Cero cajeros en ruta</span>
     <span>⛽ TANQUE LLENO: Cargar en Cadereyta o Vizarrón</span>
-    <span>📵 SIN SEÑAL CELULAR: Descarguen los mapas offline</span>
+    <span>📵 SIN SEÑAL CELULAR: Descarguen mapas offline</span>
     <span>🌿 SUSTENTABLE: Bloqueador biodegradable obligatorio</span>
     <span>⚠️ LLEVEN EFECTIVO: Cero cajeros en ruta</span>
     <span>⛽ TANQUE LLENO: Cargar en Cadereyta o Vizarrón</span>
-    <span>📵 SIN SEÑAL CELULAR: Descarguen los mapas offline</span>
+    <span>📵 SIN SEÑAL CELULAR: Descarguen mapas offline</span>
     <span>🌿 SUSTENTABLE: Bloqueador biodegradable obligatorio</span>
   </div>
 </div>
+
+<section class="section" style="padding-bottom: 0;">
+  <div class="wrap">
+    <span class="sec-label">Inspiración Visual</span>
+    <h2 class="sec-title">Un vistazo a la <em>Sierra</em></h2>
+    
+    <div class="video-grid">
+      <iframe class="yt-video" src="https://www.youtube.com/embed/fmKPJosz7cw?si=Y0R0Bv2KkLxg2oG5&amp;start=30" title="Mirador Cuatro Palos" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      
+      <iframe class="yt-video" src="https://www.youtube.com/embed/00FWrY32mZ8?si=qK1-J3hKzUvA9_P_&amp;start=50" title="Cascada El Chuveje" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
 
 <section class="section">
   <div class="wrap">
@@ -362,7 +399,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
             <div class="day-chevron">▾</div>
           </button>
           <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
-            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">La Puerta del Cielo</div><div class="act-desc">Punto más alto de la carretera federal 120. Parada obligatoria para fotos sobre las nubes.</div></div></div>
+            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">La Puerta del Cielo</div><div class="act-desc">Punto más alto de la carretera. Parada obligatoria para fotos sobre las nubes.</div></div></div>
             <div class="act"><span class="act-time">12:30 PM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Caminata de 2 km (30 min) por sendero plano. 2-3 horas para picnic.</div></div></div>
             <div class="act"><span class="act-time">04:00 PM</span><div class="act-info"><div class="act-title">Check-in y Mirador de Cristal</div><div class="act-desc">Ingreso a Cruz Verde y visita al mirador ubicado a pocos minutos.</div></div></div>
           </div></div></div>
@@ -374,7 +411,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
           </button>
           <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
             <div class="act"><span class="act-time">05:30 AM</span><div class="act-info"><div class="act-title">Mirador Cuatro Palos 🌅</div><div class="act-desc">Amanecer sobre el "mar de nubes". Guía obligatorio en el sitio. ¡Hace mucho frío!</div></div></div>
-            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">Cascada El Salto</div><div class="act-desc">Descenso de 359 escalones hacia una caída de agua prístina. (Alternativa a Puente de Dios).</div></div></div>
+            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">Cascada El Salto</div><div class="act-desc">Descenso de 359 escalones hacia una caída de agua prístina.</div></div></div>
             <div class="act"><span class="act-time">05:00 PM</span><div class="act-info"><div class="act-title">Tarde en Pinal de Amoles</div><div class="act-desc">Recorrido por el pueblo mágico y cena de cecina.</div></div></div>
           </div></div></div>
         </div>
@@ -392,8 +429,8 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
         <div class="gear">
           <div class="gear-label">Requisitos Especiales</div>
           <ul>
-            <li>Botas de senderismo o tenis antiderrapantes (Vital para los 359 escalones).</li>
-            <li>Sistema de capas: Abrigo MUY pesado para Cuatro Palos, ropa ligera para caminar.</li>
+            <li>Botas de senderismo o tenis antiderrapantes (Vital).</li>
+            <li>Sistema de capas: Abrigo MUY pesado para Cuatro Palos.</li>
             <li>Costos aprox: $80 Chuveje + $130 Cuatro Palos + $80 El Salto.</li>
           </ul>
         </div>
@@ -420,7 +457,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
             <div class="day-chevron">▾</div>
           </button>
           <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
-            <div class="act"><span class="act-time">12:00 PM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Exploración de pozas bajas para nadar. Advertencia: ¡Agua gélida!</div></div></div>
+            <div class="act"><span class="act-time">12:00 PM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Exploración de pozas bajas para nadar. ¡Agua gélida!</div></div></div>
             <div class="act"><span class="act-time">03:30 PM</span><div class="act-info"><div class="act-title">Check-in Cruz Verde</div><div class="act-desc">Instalación y preparación de alimentos.</div></div></div>
           </div></div></div>
         </div>
@@ -432,7 +469,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
           <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
             <div class="act"><span class="act-time">08:00 AM</span><div class="act-info"><div class="act-title">Descenso a Arroyo Seco</div><div class="act-desc">Trayecto de 1.5 a 2 hrs hacia la zona cálida.</div></div></div>
             <div class="act"><span class="act-time">10:30 AM</span><div class="act-info"><div class="act-title">Los Arquitos (Ayutla)</div><div class="act-desc">Caminata de 40 min por la ribera hasta pozas de 4m de profundidad.</div></div></div>
-            <div class="act"><span class="act-time">02:00 PM</span><div class="act-info"><div class="act-title">Las Adjuntas</div><div class="act-desc">Unión de los ríos Ayutla y Santa María (separación de colores y temperaturas).</div></div></div>
+            <div class="act"><span class="act-time">02:00 PM</span><div class="act-info"><div class="act-title">Las Adjuntas</div><div class="act-desc">Unión de los ríos Ayutla y Santa María.</div></div></div>
             <div class="act"><span class="act-time">05:00 PM</span><div class="act-info"><div class="act-title">Ascenso</div><div class="act-desc">Regreso a las cabañas en Pinal.</div></div></div>
           </div></div></div>
         </div>
@@ -443,15 +480,15 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
           </button>
           <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
             <div class="act"><span class="act-time">06:00 AM</span><div class="act-info"><div class="act-title">Mirador Cuatro Palos</div><div class="act-desc">Amanecer rápido antes del cierre del viaje.</div></div></div>
-            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">Almuerzo y Check-out</div><div class="act-desc">Parada en fondas de la carretera para gorditas y café.</div></div></div>
+            <div class="act"><span class="act-time">11:00 AM</span><div class="act-info"><div class="act-title">Almuerzo y Check-out</div><div class="act-desc">Parada en fondas para gorditas y café.</div></div></div>
           </div></div></div>
         </div>
 
         <div class="gear">
           <div class="gear-label">Requisitos Especiales</div>
           <ul>
-            <li>Traje de baño, toalla rápida y water shoes para las piedras del río.</li>
-            <li>Tanque lleno de gasolina desde Vizarrón (Ayutla consume más por las curvas).</li>
+            <li>Traje de baño, toalla rápida y water shoes para las piedras.</li>
+            <li>Tanque lleno desde Vizarrón (Ayutla consume más).</li>
             <li>Bloqueador y repelente 100% biodegradables.</li>
           </ul>
         </div>
@@ -490,7 +527,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
           </button>
           <div class="day-content-wrapper"><div class="day-content"><div class="day-content-inner">
             <div class="act"><span class="act-time">09:00 AM</span><div class="act-info"><div class="act-title">Cascada El Chuveje</div><div class="act-desc">Caminata matutina para evitar grupos grandes.</div></div></div>
-            <div class="act"><span class="act-time">12:30 PM</span><div class="act-info"><div class="act-title">Jalpan de Serra</div><div class="act-desc">Comida en pueblo mágico y visita a Misión de Santiago (UNESCO).</div></div></div>
+            <div class="act"><span class="act-time">12:30 PM</span><div class="act-info"><div class="act-title">Jalpan de Serra</div><div class="act-desc">Comida en pueblo mágico y visita a Misión de Santiago.</div></div></div>
             <div class="act"><span class="act-time">03:30 PM</span><div class="act-info"><div class="act-title">Presa Jalpan</div><div class="act-desc">Caminata en malecón o renta de kayak/bici acuática.</div></div></div>
           </div></div></div>
         </div>
@@ -508,9 +545,9 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
         <div class="gear">
           <div class="gear-label">Requisitos Especiales</div>
           <ul>
-            <li>Peso Máximo: 90 kg por persona para las tirolesas.</li>
-            <li>Ropa elástica y cómoda para usar con el arnés (evitar faldas).</li>
-            <li>Presupuesto extra: Circuitos de tirolesa entre $300 y $700 MXN extras.</li>
+            <li>Peso Máximo: 90 kg por persona para tirolesas.</li>
+            <li>Ropa elástica y cómoda para arnés (evitar faldas).</li>
+            <li>Presupuesto extra: Tirolesas entre $300 y $700 MXN.</li>
           </ul>
         </div>
         <div class="budget budget-c"><span class="bud-lbl">Entradas / Pax</span><span class="bud-val bud-c">~$800 <small>MXN</small></span></div>
@@ -537,10 +574,9 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
         </thead>
         <tbody>
           <tr><td>Costo Entradas</td><td class="ca">~$290 MXN</td><td class="cb">~$260 MXN</td><td class="cc">~$800 MXN</td></tr>
-          <tr><td>Tiempo en Coche</td><td>Radio 30km (Bajo)</td><td>Viaje a Ayutla (Alto)</td><td>Jalpan/Bucareli (Medio)</td></tr>
-          <tr><td>Esfuerzo Físico</td><td>Moderado (Escaleras)</td><td>Moderado (Senderos)</td><td>Alto (Adrenalina)</td></tr>
-          <tr><td>Actividad Top</td><td>Fotos & Cascadas</td><td>Nadar en Pozas</td><td>Tirolesas & UNESCO</td></tr>
-          <tr><td>Hospedaje</td><td>Cruz Verde</td><td>Cruz Verde</td><td>Cruz Verde</td></tr>
+          <tr><td>Tiempo Coche</td><td>Radio 30km</td><td>Viaje a Ayutla</td><td>Jalpan/Bucareli</td></tr>
+          <tr><td>Físico</td><td>Moderado</td><td>Moderado</td><td>Alto (Adrenalina)</td></tr>
+          <tr><td>Lo Mejor</td><td>Fotos & Cascadas</td><td>Nadar en Pozas</td><td>Tirolesas & UNESCO</td></tr>
         </tbody>
       </table>
     </div>
@@ -554,7 +590,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
     <div class="check-grid">
       <div class="check-card">
         <div class="check-ico">💵</div>
-        <div class="check-txt"><strong>Efectivo en mano</strong><p>Los parajes, guías y tienditas de la sierra no tienen terminales. No confíen en encontrar un cajero allá arriba.</p></div>
+        <div class="check-txt"><strong>Efectivo en mano</strong><p>Los parajes, guías y tienditas no tienen terminales. No confíen en encontrar cajeros allá arriba.</p></div>
       </div>
       <div class="check-card">
         <div class="check-ico">⛽</div>
@@ -562,11 +598,11 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
       </div>
       <div class="check-card">
         <div class="check-ico">📡</div>
-        <div class="check-txt"><strong>Cero Internet</strong><p>Aunque la cabaña tiene Starlink, en ruta estaremos incomunicados. Descarguen sus playlists y Google Maps offline.</p></div>
+        <div class="check-txt"><strong>Cero Internet</strong><p>En ruta estaremos incomunicados. Descarguen sus playlists y Google Maps offline.</p></div>
       </div>
       <div class="check-card">
         <div class="check-ico">🌿</div>
-        <div class="check-txt"><strong>Sustentabilidad</strong><p>Prohibidos los drones en zonas protegidas. Todo químico (bloqueador, repelente) debe ser amigable con el agua.</p></div>
+        <div class="check-txt"><strong>Sustentabilidad</strong><p>Todo bloqueador y repelente debe ser amigable con el agua.</p></div>
       </div>
     </div>
   </div>
@@ -578,7 +614,7 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
 </footer>
 
 <script>
-  // 1. Efecto Parallax en el Hero
+  // 1. Efecto Parallax en el Hero (Desactivado en móviles tácitamente por el hover)
   document.addEventListener('mousemove', (e) => {
     const orbs = document.querySelectorAll('.orb');
     const x = e.clientX / window.innerWidth - 0.5;
@@ -592,17 +628,10 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
   // 2. Acordeones Suaves
   function toggle(btn) {
     const currentItem = btn.closest('.day-item');
-    const allItems = btn.closest('.card-body').querySelectorAll('.day-item');
-    
-    // Si quieres que solo uno se abra a la vez, descomenta esto:
-    // allItems.forEach(item => {
-    //   if(item !== currentItem) item.classList.remove('open');
-    // });
-    
     currentItem.classList.toggle('open');
   }
 
-  // 3. Revelado al hacer Scroll (Intersection Observer)
+  // 3. Revelado al hacer Scroll
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -614,32 +643,24 @@ footer p { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.8; margi
 
   document.querySelectorAll('.plan-card, .check-card').forEach(el => io.observe(el));
 
-  // 4. Sistema de Votación y Confeti
+  // 4. Sistema de Votación y Confeti Verde/Natural
   function vote(planName) {
-    // Disparar confeti
     var duration = 3000;
     var end = Date.now() + duration;
 
     (function frame() {
+      // Usamos la paleta de colores natural
       confetti({
-        particleCount: 5,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors: ['#C8913B', '#4E9FB3', '#C26744']
+        particleCount: 5, angle: 60, spread: 55, origin: { x: 0 },
+        colors: ['#4A7C59', '#3A7D8C', '#B36A4F']
       });
       confetti({
-        particleCount: 5,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors: ['#C8913B', '#4E9FB3', '#C26744']
+        particleCount: 5, angle: 120, spread: 55, origin: { x: 1 },
+        colors: ['#4A7C59', '#3A7D8C', '#B36A4F']
       });
 
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      } else {
-        // Alerta nativa simpática para el usuario
+      if (Date.now() < end) { requestAnimationFrame(frame); } 
+      else {
         alert("¡Excelente elección! Has votado por " + planName + ".\n\nToma captura de pantalla y mándala al grupo para que cuente tu voto.");
       }
     }());
